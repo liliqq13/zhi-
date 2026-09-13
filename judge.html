@@ -27,6 +27,9 @@ button{appearance:none;-webkit-appearance:none}.section-head h3{flex-shrink:0;wh
 @media(max-width:370px){.page{padding-left:12px;padding-right:12px}.review-hero{padding:18px}.review-hero .hero-copy h2{font-size:24px}.scene-tab strong{font-size:11px}.scene-tab small{font-size:9px}.scene-console{padding:14px}.scene-console-top .btn{font-size:11px;padding:6px 7px}.scene-console-title h3{font-size:14px}.chapter-strip button{font-size:9px}.device-data{gap:0 10px}.map-heading select{width:195px}.connection-pill{padding:5px 7px;font-size:10px}.map-kv b{font-size:17px}.device-data .data-line{font-size:11px}.stat{padding:12px}.stat-value{font-size:23px}}
 
 .feature-card>span{display:inline-flex;align-items:center;gap:3px}.feature-card>span .icon{width:14px;height:14px}
+
+.map-route-holder{z-index:2;background:#eef4f8}
+@media(max-width:700px){.scenario-status>div:nth-child(2){flex:1 1 calc(100% - 47px)}.scenario-status>.btn{margin-top:0;margin-left:47px}}
 </style>
 </head>
 <body>
@@ -398,7 +401,7 @@ async function loadOnlineMap(){
     state.mapOnline=true;$('mapRouteHolder').hidden=true;$('mapSourceLabel').textContent='高德地图 · 预设路线';$('mapModeButton').textContent='路线概览';
     const line=new AMap.Polyline({path:routePoints(),strokeColor:'#2162e8',strokeWeight:6,isOutline:true,outlineColor:'#fff',borderWeight:2});active.add(line);state.mapLine=line;
     state.mapMarker=new AMap.Marker({position:pointOnPath(routePoints(),state.progress),content:'<div class="map-live-dot"></div>',offset:new AMap.Pixel(-12,-12)});active.add(state.mapMarker);
-    const fit=()=>active.setFitView([line],false,[90,45,window.innerWidth<701?290:55,45]);fit();
+    const fit=()=>active.setFitView([line],false,window.innerWidth<701?[80,270,36,36]:[85,45,45,45]);fit();
     const routeId=state.route,pts=routePoints();
     const placeNodes=()=>{state.mapNodes?.forEach(n=>n.setMap(null));state.mapNodes=FRACTIONS.map((f,i)=>new AMap.Marker({position:pointOnPath(routePoints(routeId),f),content:`<div class="map-event-dot">${i+1}</div>`,offset:new AMap.Pixel(-12,-12)}));state.mapNodes.forEach((n,i)=>{active.add(n);n.on('click',()=>openEvent(`SCN-${routeId.toUpperCase()}-${i+1}`))})};placeNodes();
     if(state.matchedPaths[routeId])$('mapSourceLabel').textContent='高德地图 · 已匹配道路';
@@ -518,7 +521,7 @@ document.addEventListener('click',event=>{
   if(action==='map-expand'){state.mapExpanded=!state.mapExpanded;$('mapAside').classList.toggle('expanded',state.mapExpanded);b.setAttribute('aria-expanded',String(state.mapExpanded));b.setAttribute('aria-label',state.mapExpanded?'收起路线详情':'展开路线详情')}
   if(action==='map-online'){if(state.mapOnline){state.mapGeneration++;state.map?.destroy();state.map=null;state.mapOnline=false;state.mapMarker=null;$('onlineMap').hidden=true;$('mapRouteHolder').hidden=false;$('mapRouteHolder').innerHTML=routeSvg();$('mapSourceLabel').textContent='路线概览 · 非导航底图';$('mapModeButton').textContent='在线底图'}else loadOnlineMap()}
   if(['map-plus','map-minus','map-fit'].includes(action)){
-    if(state.mapOnline){if(action==='map-plus')state.map.zoomIn();if(action==='map-minus')state.map.zoomOut();if(action==='map-fit')state.map.setFitView([state.mapLine],false,[90,45,window.innerWidth<701?290:55,45])}
+    if(state.mapOnline){if(action==='map-plus')state.map.zoomIn();if(action==='map-minus')state.map.zoomOut();if(action==='map-fit')state.map.setFitView([state.mapLine],false,window.innerWidth<701?[80,270,36,36]:[85,45,45,45])}
     else{state.mapZoom=action==='map-fit'?1:Math.max(.65,Math.min(3,state.mapZoom+(action==='map-plus'?.2:-.2)));if(action==='map-fit')state.mapPan=[0,0];$('mapRouteHolder').innerHTML=routeSvg()}
   }
 });
